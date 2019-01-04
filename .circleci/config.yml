@@ -1,86 +1,56 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
 version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python
-    environment:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/python:3.6.1
 
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
     steps:
       - checkout
+
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum  "grideyelib/build.gradle" }}
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
+
       - run:
-          name: gradle dependencies
-          command: ./gradlew androidDependencies
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -e .
+
       - save_cache:
           paths:
-            - ~/.gradle
-          key: -v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum  "grideyelib/build.gradle" }}
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
       # run tests!
+      # this example uses Django's built-in test-runner
+      # other common Python testing frameworks include pytest and nose
+      # https://pytest.org
+      # https://nose.readthedocs.io
       - run:
-          name: gradle test
+          name: run tests
           command: |
-            ./gradlew test
-            ./gradlew test lint
-      - store_test_results:
-          path: grideyelib/build/test-results
+            . venv/bin/activate
+            python manage.py test
 
       - store_artifacts:
-          path: grideyelib/build/test-results
-
-  release:
-    docker:
-      - image: circleci/android:api-28-alpha
-    environment:
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum  "grideyelib/build.gradle" }}
-            - v1-dependencies-
-      - run:
-          name: gradle dependencies
-          command: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: -v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum  "grideyelib/build.gradle" }}
-      - run:
-          name: gradle uplaod
-          command: ./gradlew bintrayUpload
-
-
-
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only: /.*/
-            tags:
-              ignore: /.*/
-  build_and_test_release:
-    jobs:
-      - build:
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /^v.*/
-      - release:
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-          requires:
-            - build
+          path: test-reports
+          destination: test-reports
+          

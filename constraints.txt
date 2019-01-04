@@ -8,4 +8,5 @@ paho-mqtt==1.4.0
 pycparser==2.19
 PyJWT==1.7.1
 six==1.12.0
+Adafruit-BluefruitLE==0.9.10
 switchbot-hub==0.1.0
