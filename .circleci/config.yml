@@ -56,7 +56,7 @@ jobs:
       - store-test-results:
           path: test-reports
 
-      - store-argifacts:
-        path: test-reports
+      - store-artifacts:
+          path: test-reports
 
           
