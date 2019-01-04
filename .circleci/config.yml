@@ -21,11 +21,11 @@ jobs:
       - checkout
 
       # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "setup.cfg" }}
+        #      - restore_cache:
+        #          keys:
+        #            - v1-dependencies-{{ checksum "setup.cfg" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+      #            - v1-dependencies-
 
       - run:
           name: install dependencies
@@ -35,10 +35,10 @@ jobs:
             pip install -e .
             pip install pytest
 
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "setup.cfg" }}
+      #      - save_cache:
+      #          paths:
+      #            - ./venv
+      #          key: v1-dependencies-{{ checksum "setup.cfg" }}
 
       # run tests!
       # this example uses Django's built-in test-runner
