@@ -49,8 +49,6 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            ls
-            mkdir test-reports
             pytest --junitxml=test-reports/junit.xml
 
       - store-test-results:
@@ -58,5 +56,3 @@ jobs:
 
       - store-artifacts:
           path: test-reports
-
-          
