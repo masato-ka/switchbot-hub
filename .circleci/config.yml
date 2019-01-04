@@ -23,7 +23,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-{{ checksum "setup.cfg" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
@@ -37,7 +37,7 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          key: v1-dependencies-{{ checksum "setup.cfg" }}
 
       # run tests!
       # this example uses Django's built-in test-runner
@@ -46,11 +46,11 @@ jobs:
       # https://nose.readthedocs.io
       - run:
           name: run tests
-          command: |
+          command:
             . venv/bin/activate
-            python manage.py test
+            pytest --junitxml=test-reports/junit.xml
 
-      - store_artifacts:
+      - store-test-results:
           path: test-reports
-          destination: test-reports
+
           
