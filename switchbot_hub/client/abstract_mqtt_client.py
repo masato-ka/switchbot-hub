@@ -19,3 +19,7 @@ class AbstractMqttClient(metaclass=ABCMeta):
     @abstractmethod
     def publish_status(self, message):
         pass
+
+    @abstractmethod
+    def setObserver(self, observer):
+        pass

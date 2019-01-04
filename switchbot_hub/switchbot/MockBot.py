@@ -22,4 +22,4 @@ class MockBotController(AbstractBotController):
         logger.info('turn off switch!')
 
     def get_device_info(self):
-        return ('4.4', 1.0)
+        return {"firmware": "4.4", "battery": 1.0}

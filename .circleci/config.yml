@@ -1,0 +1,86 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python
+    environment:
+
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum  "grideyelib/build.gradle" }}
+            - v1-dependencies-
+      - run:
+          name: gradle dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: -v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum  "grideyelib/build.gradle" }}
+      # run tests!
+      - run:
+          name: gradle test
+          command: |
+            ./gradlew test
+            ./gradlew test lint
+      - store_test_results:
+          path: grideyelib/build/test-results
+
+      - store_artifacts:
+          path: grideyelib/build/test-results
+
+  release:
+    docker:
+      - image: circleci/android:api-28-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum  "grideyelib/build.gradle" }}
+            - v1-dependencies-
+      - run:
+          name: gradle dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: -v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum  "grideyelib/build.gradle" }}
+      - run:
+          name: gradle uplaod
+          command: ./gradlew bintrayUpload
+
+
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              ignore: /.*/
+  build_and_test_release:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /^v.*/
+      - release:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - build
