@@ -42,10 +42,10 @@ class InformationDelegate(DefaultDelegate):
             print(" Other notification")
 
 
-class SwitchBot(AbstractBotController):
+class SwitchBotClient(AbstractBotController):
 
     def __init__(self, config):
-        self.device_id = config.switchbot_id
+        self.device_id = config.options.switchbot_id
         self.version = None
         self.battery = None
 
