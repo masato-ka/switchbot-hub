@@ -10,7 +10,7 @@ from switchbot_hub.client.cloud_iot_core import CloudIoTCoreClient
 from switchbot_hub.config import AbstractConfigurationManager
 from switchbot_hub.config.SwitchBotHubConfigManager import SwitchBotHubConfigManager
 from switchbot_hub.hub_controller import HubController
-from switchbot_hub.switchbot.MockBot import MockBotController
+from switchbot_hub.switchbot.SwitchBot import SwitchBot
 from switchbot_hub.switchbot.abstract_bot_controller import AbstractBotController
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ def inject_config(binder):
     config_manager = SwitchBotHubConfigManager(os.path.dirname(os.path.abspath(__file__)))
     binder.bind(AbstractConfigurationManager, config_manager)
     binder.bind(AbstractMqttClient, CloudIoTCoreClient(config_manager))
-    binder.bind(AbstractBotController, MockBotController(config_manager))
+    binder.bind(AbstractBotController, SwitchBot(config_manager))
 
 
 def main():
