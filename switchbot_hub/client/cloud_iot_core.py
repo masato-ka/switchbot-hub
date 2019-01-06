@@ -54,14 +54,14 @@ class CloudIoTCoreClient(AbstractMqttClient):
         while True:
             time.sleep(0.8)  # The magic number
             self._client.loop()
-            if self.should_backoff:
-                if self.minimum_backoff_time > self.MAXIMUM_BACKOFF_TIME:
+            if self._should_backoff:
+                if self._minimum_backoff_time > self._MAXIMUM_BACKOFF_TIME:
                     logger.warn('Exceeded maximum backoff time. Giving up.')
                     break
-                delay = self.minimum_backoff_time + random.randint(0, 1000) / 1000.0
+                delay = self._minimum_backoff_time + random.randint(0, 1000) / 1000.0
                 logger.info('Waiting for {} before reconnecting.'.format(delay))
                 time.sleep(delay)
-                self.minimum_backoff_time *= 2
+                self._minimum_backoff_time *= 2
                 self._client.connect(self._mqtt_bridge_hostname, self._mqtt_bridge_port)
             seconds_since_issue = (datetime.datetime.utcnow() - jwt_iat).seconds
             if seconds_since_issue > 60 * jwt_exp_mins:
@@ -87,12 +87,12 @@ class CloudIoTCoreClient(AbstractMqttClient):
 
     def _on_connect(self, unused_client, unused_userdata, unused_flags, rc):
         logger.info('on_connect ' + mqtt.connack_string(rc))
-        self.should_backoff = False
-        self.minimum_backoff_time = 1
+        self._should_backoff = False
+        self._minimum_backoff_time = 1
 
     def _on_disconnect(self, unused_client, unused_userdata, rc):
         logger.info('on_disconnect', self.error_str(rc))
-        self.should_backoff = True
+        self._should_backoff = True
 
     def _on_publish(self, unused_client, unused_userdata, unused_mid):
         logger.info('on_publish')
