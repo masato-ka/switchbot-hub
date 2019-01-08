@@ -99,7 +99,7 @@ class CloudIoTCoreClient(AbstractMqttClient):
 
     def _on_message(self, unused_client, unused_userdata, message):
         logger.info(message.payload.decode("utf-8"))
-        self._observer.notify(message.payload)
+        self._observer.notify(message.payload.decode("utf-8"))
 
     def _get_client(self):
         client = mqtt.Client(
