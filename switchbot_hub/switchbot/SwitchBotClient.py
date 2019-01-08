@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import binascii
+import platform
 import struct
 import threading
 
@@ -71,9 +72,14 @@ class SwitchBotClient(AbstractBotController):
         return (self.version, self.battery)
 
     def _notify(self, payload):
-        self.version = "".join([x + "." for x in str(struct.unpack('B', payload[2])[0])])[:-1]
-        btr = struct.unpack('B', payload[1])
-        self.battery = btr[0] / 255.0 if btr[0] is not 0 else 0
+        # when interpreter is python3 do not need unpack because it is int primitive.
+        if platform.python_version_tuple()[0] == 2:
+            self.version = "".join([x + "." for x in str(struct.unpack('B', payload[2])[0])])[:-1]
+            btr = struct.unpack('B', payload[1])
+            self.battery = btr[0] / 255.0 if btr[0] is not 0 else 0
+        else:
+            self.version = "".join([x + '.' for x in str(payload[2])])[:-1]
+            self.battery = payload[1] / 255.0 if payload[1] is not 0 else 0
 
     def _start_notification(self, p):
         information_delegate = InformationDelegate()
