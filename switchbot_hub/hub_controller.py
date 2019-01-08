@@ -30,9 +30,9 @@ class HubController(AbstractHubController):
             self.logger.error("mqtt client is not AbstractMqttClient. failed initialize HubController.")
             raise Exception("mqttClient is not AbstractMqttClient.")
 
-        if not isinstance(switchBot, AbstractBotController):
-            self.logger.error("switchBot is not AbstractBotController. failed initialize HubController.")
-            raise Exception("switchBot is not AbstractBotController.")
+        #       if not isinstance(switchBot, AbstractBotController):
+        #           self.logger.error("switchBot is not AbstractBotController. failed initialize HubController.")
+        #           raise Exception("switchBot is not AbstractBotController.")
 
         self.mqttClient = mqttClient
         self.mqttClient.setObserver(self)
