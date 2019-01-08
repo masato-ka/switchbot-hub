@@ -69,7 +69,7 @@ class SwitchBotClient(AbstractBotController):
         recv_thread.join()
         self._stop_notification(p)
         p.disconnect()
-        return {"version": self.version, "battery": self.battery}
+        return {"firmware": self.version, "battery": self.battery}
 
     def _notify(self, payload):
         # when interpreter is python3 do not need unpack because it is int primitive.
